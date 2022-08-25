@@ -7,9 +7,9 @@ class User(AbstractUser):
     MODERATOR = 'moderator'
     ADMIN = 'admin'
     ROLE_CHOICES = [
-        (USER, 'User'),
-        (MODERATOR, 'Moderator'),
-        (ADMIN, 'Admin'),
+        (USER, 'user'),
+        (MODERATOR, 'moderator'),
+        (ADMIN, 'admin'),
     ]
     role = models.CharField(
         max_length=10,
@@ -18,3 +18,11 @@ class User(AbstractUser):
         choices=ROLE_CHOICES,
         default=USER,
     )
+    bio = models.TextField(
+        verbose_name='Биография',
+        help_text='Расскажите о себе',
+        blank=True,
+    )
+
+    def __str__(self) -> str:
+        return self.username
