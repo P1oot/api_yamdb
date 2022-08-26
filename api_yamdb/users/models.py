@@ -18,3 +18,11 @@ class User(AbstractUser):
         choices=ROLE_CHOICES,
         default=USER,
     )
+    bio = models.TextField(
+        verbose_name='Биография',
+        help_text='Расскажите о себе',
+        blank=True,
+    )
+
+    def __str__(self) -> str:
+        return self.username
