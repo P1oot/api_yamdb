@@ -1,6 +1,7 @@
 from django.db import models
 from users.models import User
 
+
 class Category(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=50, unique=True)
@@ -14,15 +15,16 @@ class Genre(models.Model):
 class Title(models.Model):
     name = models.CharField(max_length=200)
     year = models.IntegerField()
-    description = models.TextField(null=True)
+    description = models.TextField()
     genre = models.ManyToManyField(
         Genre,
-        null=True,
+        blank=True,
         related_name='titles'
-        )
+    )
     category = models.ForeignKey(
         Category,
         null=True,
+        blank=True,
         on_delete=models.SET_NULL,
         related_name='titles'
     )
