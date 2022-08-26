@@ -1,18 +1,65 @@
 from django.shortcuts import get_object_or_404
 from .models import User
-from .serializers import UserSerializer, UserEditSerializer
-from rest_framework import viewsets, mixins, permissions, status
+from .serializers import (
+    UserSerializer,
+    UserEditSerializer,
+    UserCreateSerializer,
+    TokenSerializer
+)
+from rest_framework import viewsets, permissions, status, mixins
 from .permissions import Admin
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.core.mail import send_mail
+from django.contrib.auth.tokens import default_token_generator
+from rest_framework_simplejwt.tokens import AccessToken
 
 
-class RetriveUpdateViewSet(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    viewsets.GenericViewSet,
-):
+class CreateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     pass
+
+
+class UserCreateViewSet(CreateViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserCreateSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        username = request.data['username']
+        user = get_object_or_404(User, username=username)
+        address_to = request.data['email']
+        confirmation_code = default_token_generator.make_token(user)
+        print(confirmation_code)
+        send_mail(
+            subject='Регистрация YamDB',
+            message=f'Код подтверждения: {confirmation_code}',
+            from_email='admin@admin.com',
+            recipient_list=[address_to],
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK,
+                        headers=headers)
+
+
+class TokenViewSet(CreateViewSet):
+    serializer_class = TokenSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        username = request.data['username']
+        user = get_object_or_404(User, username=username)
+        if default_token_generator.check_token(
+            user,
+            request.data['confirmation_code']
+        ):
+            token = AccessToken.for_user(user)
+            return Response(f'Ваш токен: {token}', status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserViewSet(viewsets.ModelViewSet):
