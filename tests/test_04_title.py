@@ -153,6 +153,7 @@ class Test04TitleAPI:
         assert response.status_code != 404, (
             'Страница `/api/v1/titles/{title_id}/` не найдена, проверьте этот адрес в *urls.py*'
         )
+        
         assert response.status_code == 200, (
             'Проверьте, что при GET запросе `/api/v1/titles/{title_id}/` '
             'без токена авторизации возвращается статус 200'
