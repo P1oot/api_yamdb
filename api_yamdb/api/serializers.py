@@ -1,3 +1,4 @@
+from pickletools import read_long1
 from rest_framework import serializers
 from reviews.models import Category, Comment, Genre, Review, Title
 
@@ -21,12 +22,22 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(many=False)
-    genre = GenreSerializer(many=True)
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all(),
+        many=False
+    )
+    genre = serializers.SlugRelatedField(
+        slug_field='slug',
+        read_only=False,
+        queryset=Genre.objects.all(),
+        many=True
+    )
 
     class Meta:
-        fields = ('name', 'year', 'description', 'category', 'genre')
+        fields = ('id', 'name', 'year', 'description', 'category', 'genre')
         model = Title
+
 
 
 class ReviewSerializer(serializers.ModelSerializer):
