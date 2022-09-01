@@ -4,7 +4,7 @@ from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from reviews.models import Category, Genre, Review, Title
 
-from .permissions import GetOrAdminOnly
+from .permissions import AuthorModerOrReadOnly, GetOrAdminOnly
 from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, GetTitleSerializer,
                           ReviewSerializer, TitleSerializer)
@@ -47,9 +47,9 @@ class TitleViewSet(viewsets.ModelViewSet):
             return GetTitleSerializer
         return TitleSerializer
 
-
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
+    permission_classes = (AuthorModerOrReadOnly,)
 
     def get_queryset(self):
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
@@ -62,6 +62,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
+    permission_classes = (AuthorModerOrReadOnly,)
 
     def get_queryset(self):
         review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
