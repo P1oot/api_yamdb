@@ -1,11 +1,13 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, viewsets
+from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from reviews.models import Category, Genre, Review, Title
 
 from .permissions import GetOrAdminOnly
 from .serializers import (CategorySerializer, CommentSerializer,
-                          GenreSerializer, ReviewSerializer, TitleSerializer)
+                          GenreSerializer, GetTitleSerializer, ReviewSerializer,
+                          TitleSerializer)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -30,6 +32,16 @@ class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     pagination_class = PageNumberPagination
+    permission_classes = (GetOrAdminOnly, )
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('name', )
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return GetTitleSerializer
+        if self.action == 'retrieve':
+            return GetTitleSerializer
+        return TitleSerializer
 
 
 
