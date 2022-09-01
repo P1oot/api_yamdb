@@ -1,11 +1,14 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, viewsets
 from rest_framework.pagination import PageNumberPagination
+from django_filters.rest_framework import DjangoFilterBackend
 from reviews.models import Category, Genre, Review, Title
 
 from .permissions import AuthorModerOrReadOnly, GetOrAdminOnly
 from .serializers import (CategorySerializer, CommentSerializer,
-                          GenreSerializer, ReviewSerializer, TitleSerializer)
+                          GenreSerializer, GetTitleSerializer,
+                          ReviewSerializer, TitleSerializer)
+from .filters import TitleFilter
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -15,6 +18,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name', )
     pagination_class = PageNumberPagination
+    lookup_field = 'slug'
 
 
 class GenreViewSet(viewsets.ModelViewSet):
@@ -24,13 +28,24 @@ class GenreViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name', )
     pagination_class = PageNumberPagination
+    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     pagination_class = PageNumberPagination
+    permission_classes = (GetOrAdminOnly, )
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filterset_class = TitleFilter
+    search_fields = ('name', )
 
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return GetTitleSerializer
+        if self.action == 'retrieve':
+            return GetTitleSerializer
+        return TitleSerializer
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer

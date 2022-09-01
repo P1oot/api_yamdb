@@ -7,6 +7,7 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('name', 'slug')
         model = Category
+        lookup_fields = 'slug'
 
     def validate(self, data):
         if data == {}:
@@ -19,6 +20,7 @@ class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('name', 'slug')
         model = Genre
+        lookup_field = 'slug'
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -49,6 +51,17 @@ class TitleSerializer(serializers.ModelSerializer):
         if not len(scors) == 0:
             rating = round(sum(scors) / len(scors))
         return rating
+
+class GetTitleSerializer(serializers.ModelSerializer):
+    category = CategorySerializer(
+        read_only=True,
+        many=False
+    )
+    genre = GenreSerializer(many=True)
+
+    class Meta:
+        fields = ('id', 'name', 'year', 'description', 'category', 'genre')
+        model = Title
 
 
 class ReviewSerializer(serializers.ModelSerializer):
