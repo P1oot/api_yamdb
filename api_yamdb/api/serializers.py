@@ -1,5 +1,3 @@
-from cgitb import lookup
-from pickletools import read_long1
 from rest_framework import serializers
 from reviews.models import Category, Comment, Genre, Review, Title
 
@@ -21,6 +19,7 @@ class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('name', 'slug')
         model = Genre
+        lookup_field = 'slug'
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -42,22 +41,15 @@ class TitleSerializer(serializers.ModelSerializer):
 
 
 class GetTitleSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(read_only=True,
-    many=False
+    category = CategorySerializer(
+        read_only=True,
+        many=False
     )
     genre = GenreSerializer(many=True)
-    # genre = serializers.SlugRelatedField(
-    #     slug_field='slug',
-    #     read_only=False,
-    #     queryset=Genre.objects.all(),
-    #     many=True
-    # )
 
     class Meta:
         fields = ('id', 'name', 'year', 'description', 'category', 'genre')
         model = Title
-
-
 
 
 class ReviewSerializer(serializers.ModelSerializer):
