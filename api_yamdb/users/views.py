@@ -11,6 +11,7 @@ from .permissions import Admin
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.core.mail import send_mail
+from rest_framework.pagination import PageNumberPagination
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework_simplejwt.tokens import AccessToken
 
@@ -65,6 +66,7 @@ class TokenViewSet(CreateViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
     queryset = User.objects.all()
+    pagination_class = PageNumberPagination
     serializer_class = UserSerializer
     permission_classes = [Admin]
 
