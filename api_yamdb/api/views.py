@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import filters, viewsets
+from rest_framework import filters, viewsets, mixins
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from reviews.models import Category, Genre, Review, Title
@@ -11,7 +11,8 @@ from .serializers import (CategorySerializer, CommentSerializer,
 from .filters import TitleFilter
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
+                      mixins.DestroyModelMixin, viewsets.GenericViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (GetOrAdminOnly, )
@@ -21,7 +22,8 @@ class CategoryViewSet(viewsets.ModelViewSet):
     lookup_field = 'slug'
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+class GenreViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
+                   mixins.DestroyModelMixin, viewsets.GenericViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (GetOrAdminOnly, )
