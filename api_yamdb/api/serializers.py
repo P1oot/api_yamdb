@@ -52,6 +52,7 @@ class TitleSerializer(serializers.ModelSerializer):
             rating = round(sum(scors) / len(scors))
         return rating
 
+
 class GetTitleSerializer(serializers.ModelSerializer):
     category = CategorySerializer(
         read_only=True,
