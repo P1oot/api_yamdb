@@ -47,22 +47,18 @@ class TitleSerializer(serializers.ModelSerializer):
         scors = []
         for review in title.reviews.all():
             scors = scors + [review.score]
-        rating = 0
+        rating = None
         if not len(scors) == 0:
             rating = round(sum(scors) / len(scors))
         return rating
 
 
-class GetTitleSerializer(serializers.ModelSerializer):
+class GetTitleSerializer(TitleSerializer):
     category = CategorySerializer(
         read_only=True,
         many=False
     )
     genre = GenreSerializer(many=True)
-
-    class Meta:
-        fields = ('id', 'name', 'year', 'description', 'category', 'genre')
-        model = Title
 
 
 class ReviewSerializer(serializers.ModelSerializer):
