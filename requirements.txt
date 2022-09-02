@@ -8,3 +8,4 @@ pytest-pythonpath==0.7.3
 djangorestframework-simplejwt==4.7.2
 django-filter==22.1
 flake8==5.0.4
+importlib-metadata==1.7.0
