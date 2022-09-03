@@ -11,8 +11,14 @@ from .serializers import (CategorySerializer, CommentSerializer,
 from .filters import TitleFilter
 
 
-class CategoryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
-                      mixins.DestroyModelMixin, viewsets.GenericViewSet):
+class ListCreateDestroyViewSet(mixins.ListModelMixin,
+                               mixins.CreateModelMixin,
+                               mixins.DestroyModelMixin,
+                               viewsets.GenericViewSet):
+    pass
+
+
+class CategoryViewSet(ListCreateDestroyViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (GetOrAdminOnly, )
@@ -22,8 +28,7 @@ class CategoryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
     lookup_field = 'slug'
 
 
-class GenreViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
-                   mixins.DestroyModelMixin, viewsets.GenericViewSet):
+class GenreViewSet(ListCreateDestroyViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (GetOrAdminOnly, )
@@ -43,9 +48,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     search_fields = ('name', )
 
     def get_serializer_class(self):
-        if self.action == 'list':
-            return GetTitleSerializer
-        if self.action == 'retrieve':
+        if self.action in ('list', 'retrieve'):
             return GetTitleSerializer
         return TitleSerializer
 
