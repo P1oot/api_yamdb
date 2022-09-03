@@ -30,6 +30,13 @@ class UserCreateSerializer(UserSerializer):
         model = User
         fields = ('email', 'username',)
 
+    def validate(self, data):
+        if data['username'] == data['email']:
+            raise serializers.ValidationError(
+                'Поля "username" и "email" должны быть различны'
+            )
+        return data
+
     def validate_username(self, value):
         if value == 'me':
             raise serializers.ValidationError(

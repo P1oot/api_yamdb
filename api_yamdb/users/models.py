@@ -12,7 +12,7 @@ class User(AbstractUser):
         (ADMIN, 'admin'),
     ]
     role = models.CharField(
-        max_length=10,
+        max_length=20,
         verbose_name='Роль',
         help_text='Роль пользователя',
         choices=ROLE_CHOICES,
@@ -23,6 +23,14 @@ class User(AbstractUser):
         help_text='Расскажите о себе',
         blank=True,
     )
+
+    @property
+    def is_admin(self):
+        return self.role == self.ADMIN or self.is_superuser
+
+    @property
+    def is_moderator(self):
+        return self.role == self.MODERATOR
 
     def __str__(self) -> str:
         return self.username
