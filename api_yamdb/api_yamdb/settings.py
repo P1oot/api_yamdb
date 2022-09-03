@@ -110,6 +110,12 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
 
 
+# E-mail
+
+DOMAIN_NAME = 'yamdb.ru'
+DEFOULT_FROM_EMAIL = f'admin@{DOMAIN_NAME}'
+
+
 # Path of standart model User
 
 AUTH_USER_MODEL = 'users.User'
