@@ -4,11 +4,12 @@ from .views import UserViewSet, UserCreateViewSet, TokenViewSet
 
 app_name = 'users'
 
-router = DefaultRouter()
+router = router_auth = DefaultRouter()
 router.register('users', UserViewSet)
-router.register('auth/signup', UserCreateViewSet)
-router.register('auth/token', TokenViewSet, basename='token')
+router_auth.register('signup', UserCreateViewSet)
+router_auth.register('token', TokenViewSet, basename='token')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('auth/', include(router_auth.urls)),
 ]
