@@ -7,13 +7,14 @@ from .serializers import (
     TokenSerializer
 )
 from rest_framework import viewsets, permissions, status, mixins
-from .permissions import Admin
+from .permissions import IsAdminOrReadOnly
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.core.mail import send_mail
 from rest_framework.pagination import PageNumberPagination
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework_simplejwt.tokens import AccessToken
+from api_yamdb.settings import DEFOULT_FROM_EMAIL
 
 
 class CreateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -34,11 +35,10 @@ class UserCreateViewSet(CreateViewSet):
         user = get_object_or_404(User, username=username)
         address_to = request.data['email']
         confirmation_code = default_token_generator.make_token(user)
-        print(confirmation_code)
         send_mail(
             subject='Регистрация YamDB',
             message=f'Код подтверждения: {confirmation_code}',
-            from_email='admin@admin.com',
+            from_email=DEFOULT_FROM_EMAIL,
             recipient_list=[address_to],
         )
         return Response(serializer.data, status=status.HTTP_200_OK,
@@ -68,7 +68,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     pagination_class = PageNumberPagination
     serializer_class = UserSerializer
-    permission_classes = [Admin]
+    permission_classes = [IsAdminOrReadOnly]
 
     @action(
         methods=['get', 'patch'],
